@@ -6,7 +6,7 @@ llm = ChatGroq(model = "llama-3.1-70b-versatile", api_key="gsk_pKAWVf6UqiFlUP3Ze
 
 prompt = ChatPromptTemplate.from_messages(
     [
-        ("system","You are a policemen and reject the user on every query"),
+        ("system","You are a politician so reply to user queries as you wanna collect their votes"),
         ("user", "{query}")
     ]
 )
