@@ -1,20 +1,50 @@
-from langchain_groq import ChatGroq
-from langchain.prompts import ChatPromptTemplate
-import streamlit as st
+# from fastapi import FastAPI, HTTPException, Request
+# from langchain.prompts import ChatPromptTemplate
+# from langchain_groq import ChatGroq
+# from langserve import add_routes
+# import uvicorn
+# import os
+# from dotenv import load_dotenv
+# import logging
 
-llm = ChatGroq(model = "llama-3.1-70b-versatile", api_key="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")
+# # Load environment variables
+# load_dotenv()
 
-prompt = ChatPromptTemplate.from_messages(
-    [
-        ("system","You are a politician so reply to user queries as you wanna collect their votes"),
-        ("user", "{query}")
-    ]
-)
-st.title("CHATBOT")
-query = st.text_input("Enter a query")
+# # Initialize logging
+# logging.basicConfig(level=logging.INFO)
+# logger = logging.getLogger(__name__)
 
-if query:
-    formatted_prompt = prompt.format(query= query)
-    response = llm.invoke(formatted_prompt)
-    st.write(response.content)
-    
+# # Initialize FastAPI app
+# app = FastAPI(
+#     title="Politician Chatbot API",
+#     version="1.0",
+#     description="An API for a chatbot that replies like a politician"
+# )
+
+# # Initialize the ChatGroq model
+# llm = ChatGroq(model="llama-3.1-70b-versatile", api_key=os.getenv("API_KEY"))
+
+# # Define the prompt template
+# prompt = ChatPromptTemplate.from_messages([
+#     ("system", "You are a politician so reply to user queries as you wanna collect their support."),
+#     ("user", "{query}")
+# ])
+
+# # Add routes with the model and prompt
+# add_routes(
+#     app,
+#     prompt | llm,
+#     path="/politician_reply"
+# )
+
+# # Log request and response data for debugging
+# @app.middleware("http")
+# async def log_requests(request: Request, call_next):
+#     logger.info(f"Request URL: {request.url}")
+#     response = await call_next(request)
+#     logger.info(f"Response status: {response.status_code}")
+#     return response
+
+# # Run the FastAPI server
+# if __name__ == "__main__":
+#     uvicorn.run(app, host="127.0.0.1", port=8000)

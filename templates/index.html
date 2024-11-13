@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat with Me</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar Toggle Button -->
+        <button class="toggle-btn" onclick="toggleSidebar()">☰</button>
+
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar">
+            <h2>Conversation History</h2>
+            <div id="history-list"></div>
+        </div>
+
+        <!-- Main Chat Area -->
+        <div class="chat-area">
+            <h1>TALK TO ME</h1>
+            <div id="chat-box">
+                <p>Ask me anything:</p>
+                <div class="input-container">
+                    <input type="text" id="user-query" placeholder="Say something" onkeydown="checkEnter(event)">
+                    <button onclick="sendQuery()" class="send-btn">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-send"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                    </button>
+                </div>
+                <div id="response"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById("sidebar");
+            sidebar.classList.toggle("hidden");
+        }
+
+        function checkEnter(event) {
+            if (event.key === 'Enter') {
+                sendQuery();
+            }
+        }
+
+        async function sendQuery() {
+            const queryInput = document.getElementById("user-query");
+            const query = queryInput.value.trim();
+            if (!query) return;
+
+            const responseDiv = document.getElementById("response");
+            const historyList = document.getElementById("history-list");
+            responseDiv.innerHTML = '<div class="loader"></div>';
+            queryInput.value = ''; // Clear input field
+
+            const response = await fetch("/chat", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ query: query })
+            });
+
+            const data = await response.json();
+            if (data.response) {
+                responseDiv.innerHTML = `<p>${data.response}</p>`;
+
+                // Add User Message
+                const userMessage = document.createElement("div");
+                userMessage.classList.add("user-message");
+                userMessage.innerHTML = `<p><strong>User:</strong> ${query}</p>`;
+                historyList.appendChild(userMessage);
+
+                // Add Bot Response
+                const botMessage = document.createElement("div");
+                botMessage.classList.add("bot-message");
+                botMessage.innerHTML = `<p><strong>Bot:</strong> ${data.response}</p>`;
+                historyList.appendChild(botMessage);
+                
+                // Scroll to the latest message
+                historyList.scrollTop = historyList.scrollHeight;
+            } else {
+                responseDiv.innerHTML = `<p>Error: ${data.error}</p>`;
+            }
+        }
+    </script>
+</body>
+</html>
